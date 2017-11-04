@@ -31,4 +31,20 @@ contract PostService {
     mapping (uint => Item) public items;
     mapping (uint => uint[]) public item_paths;
     mapping (uint => uint[]) public item_paths_time;
+    
+    function add_stock(bytes32 _name, address _address) public returns(uint) {
+        stock_names[stockCount] = _name;
+        stock_addresses[stockCount] = _address;
+        uint index = stockCount;
+        stockCount++;
+        return index;
+    }
+    
+    function get_stock_address(uint _index) constant public returns (address) {
+        return stock_addresses[_index];
+    }
+    
+    function get_stock_name(uint _index) constant public returns (bytes32) {
+        return stock_names[_index];
+    }
 } 
