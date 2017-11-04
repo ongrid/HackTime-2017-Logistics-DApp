@@ -69,7 +69,7 @@ contract PostService {
     }
     
     function transfer(uint _index, uint _from, uint _to) public returns (bool) {
-        require(item_paths[_index][item_paths[_index].length - 1] == _from && items[_index].to != _from);
+        require(item_paths[_index][item_paths[_index].length - 1] == _from && items[_index].to != _from && msg.sender == stock_addresses[_from]);
         item_paths[_index].push(_to);
         return true;
     }
