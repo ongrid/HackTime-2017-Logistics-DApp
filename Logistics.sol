@@ -47,4 +47,34 @@ contract PostService {
     function get_stock_name(uint _index) constant public returns (bytes32) {
         return stock_names[_index];
     }
+    
+    function add_item(bytes32 _name, uint _from, uint _to, bytes32 _weight, bytes32 _name_from, bytes32 _name_to) public returns(uint) {
+        uint index = itemCount;
+        items[index] = Item({
+            name: _name,
+            from: _from,
+            to: _to,
+            weight: _weight,
+            name_from: _name_from,
+            name_to: _name_to
+        });
+        item_paths[index].push(_from);
+        item_paths_time[index].push(now);
+        itemCount++;
+        return index;
+    }
+    
+    function get_item(uint _index) constant public returns (bytes32, uint, uint, bytes32, bytes32, bytes32){
+        return (items[_index].name, items[_index].from, items[_index].to, items[_index].weight, items[_index].name_from, items[_index].name_to);
+    }
+    
+    function transfer(uint _index, uint _from, uint _to) public returns (bool) {
+        require(item_paths[_index][item_paths[_index].length - 1] == _from && items[_index].to != _from);
+        item_paths[_index].push(_to);
+        return true;
+    }
+    
+    function get_path(uint _index) constant public returns (uint[]) {
+        return item_paths[_index];
+    }
 } 
