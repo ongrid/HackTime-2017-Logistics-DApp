@@ -1,8 +1,8 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.13;
 
 contract PostService {
-    uint itemCount;
-    uint stockCount;
+    uint public itemCount;
+    uint public stockCount;
     address owner;
     
     function PostService() public {
@@ -32,11 +32,15 @@ contract PostService {
     mapping (uint => uint[]) public item_paths;
     mapping (uint => uint[]) public item_paths_time;
     
+    event NewItem(uint index);
+    event NewStock(uint index);
+
     function add_stock(bytes32 _name, address _address) public returns(uint) {
         stock_names[stockCount] = _name;
         stock_addresses[stockCount] = _address;
         uint index = stockCount;
         stockCount++;
+        NewStock(index);
         return index;
     }
     
@@ -47,7 +51,7 @@ contract PostService {
     function get_stock_name(uint _index) constant public returns (bytes32) {
         return stock_names[_index];
     }
-    
+ 
     function add_item(bytes32 _name, uint _from, uint _to, bytes32 _weight, bytes32 _name_from, bytes32 _name_to) public returns(uint) {
         uint index = itemCount;
         items[index] = Item({
@@ -61,6 +65,7 @@ contract PostService {
         item_paths[index].push(_from);
         item_paths_time[index].push(now);
         itemCount++;
+        NewItem(index);
         return index;
     }
     
@@ -71,10 +76,15 @@ contract PostService {
     function transfer(uint _index, uint _from, uint _to) public returns (bool) {
         require(item_paths[_index][item_paths[_index].length - 1] == _from && items[_index].to != _from && msg.sender == stock_addresses[_from]);
         item_paths[_index].push(_to);
+        item_paths_time[_index].push(now);
         return true;
     }
     
     function get_path(uint _index) constant public returns (uint[]) {
         return item_paths[_index];
     }
-} 
+    
+    function get_path_times(uint _index) constant public returns (uint[]) {
+        return item_paths_time[_index];
+    }
+}
